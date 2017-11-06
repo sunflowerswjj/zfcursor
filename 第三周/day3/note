@@ -1,0 +1,101 @@
+1.js盒子模型:
+    1)client系列:
+      clientWidth:width+padding(左右)
+      clientHeight:height+padding(上下)
+      clientLeft:左边框
+      clientTop:上边框
+
+    2)offset系列
+      offsetWidth:width+padding(左右)+border(左右)=clientWidth+border(左右)
+      offsetHeight:height+padding(上下)+border(上下)=clientHeight+border(上下)
+
+      offsetLeft:左偏移
+      offsetTop:上偏移
+      offsetParent:参照物
+
+      默认情况下,是相对于body进行偏移
+      修改参照物:position:absolute|relative|fixed
+      最终找最近的已经定位的祖先元素
+      需求:不管参照物是谁,求出当前元素距离body的偏移 ->封装offset(ele)
+
+    3)scroll系列
+      scrollWidth:约等于真实内容的宽度(包含溢出的内容)+左padding
+      scrollHeight:约等于真实内容的高度(包含溢出的内容)+上padding
+      "约等于":1.同一个浏览器,是否设置overflow属性,最终结果不一样
+              2.不同的浏览器scrollWidth/scrollHeight值不一样
+
+      scrollLeft:横向滚动条卷去的内容
+      scrollTop:纵向滚动条卷去的内容
+
+2.获取任意的css样式
+ 1)window.getComputedStyle(ele,null)->方法,返回值:css样式的集合
+ 2)ele.currentStyle->属性  结果->css样式的集合
+ 3)升级1:width|height|padding|margin|left|right|bottom|top ....这些属性获取的结果类似于100px(左边是数值右边单位),把它的单位去掉并且转换成数类型,若不是这种结果还是原值返回
+ 4)升级2  IE6-8浏览器获取值和起作用值不是一个,在IE下得去filter的值
+ ->alpha(opacity =70)->把这个数值70获取再除以100返回,得到和opacity结果一样的值
+
+3.处理浏览器兼容
+ 1)属性的方式
+  1.window.getComputedStyle
+  2."getComputedStyle" in window
+ 2)检测数据类型
+   typeof getComputedStyle =="function";
+   arry instanceof Array ->精确的检测出数据类型
+ 3)浏览器信息检测-IE浏览器
+   window.navigator.userAgent.indexOf("MSIE 8.0");
+   /MSIE [6-8]\.0/.test(navigator.userAgent)
+ 4)try...catch(e)... ->可以捕获异常信息,从而按照另外一种方式处理
+
+4.scrollLeft/scrollTop
+  scrollTop 纵向滚动条卷出去的高度 ->内容卷出去的高度
+  scrollLeft 横向滚动条卷出去的宽度->内容卷出去的宽度
+  scrollTop和scrollLeft 是13个属性中唯一的能写的两个属性,有最大值和最小值
+  scrollTop最小值是0
+  scrollTop最大值指内容能卷出去的最大高度
+  scrollTop=真实高度-一屏高度 = oDiv.scrollHeight-oDiv.clientHeight
+
+5.若要改变scrollLeft/scrollTop值,必须能出现滚动条
+  出现滚动条的条件是内容溢出
+
+6.js单线程,js这边出现两种编程方式:同步和异步
+同步:一个事情做完了,再去做另一个事情 for,while ->效率低
+异步:先规定做一件事,现在先不做,在一定时间后完成,去做其他的事情,当所有事情都做完了,再回过头看看是否到时间去做这件事了,若还没到这个时间,则等着,直到这个时间再去做这件事
+例如:定时器,所有的事件绑定,ajax请求数据,回调函数...
+
+同步代码放在执行区完成,异步代码在程序池队列里完成
+
+7.图片延迟加载
+作用:提交网页加载的速度
+首屏图片处理:先用一个占位符代替图片,把首屏的其他内容加载完之后(隔了一段时间之后),再让图片显示出来
+
+其他屏的图片:先用一个占位符代替,等滚动到该图片区域时,再把图片显示出来
+步骤:1.布局上img的src属性是占位符图片的地址,真实的图片地址保存在realImg自定义属性上
+    2.所有的内容是在滚轮事件触发时进行的
+    3.滚动到图片区域时才让图片显示出来?
+       疑问1:怎样才能表示滚动到图片区域了
+       ->浏览器底边框到body上偏移>图片底边框到body的上偏移
+       疑问2:显示图片的操作真正如我们想象的那么简单吗?
+        不是直接把地址赋给src属性
+        具体步骤如下:
+        1.先创建个图片对象
+        2.把真实的图片地址赋给图片对象的src属性
+        3.在后台加载这张图片,并且校验这张图片是否加载成功
+        加载成功->onload  把真实图片的地址赋值给img的src属性
+            优化下:1.避免重复加载
+                  2.把创建的对象设为null,释放这块内存
+        加载失败->onerror
+
+作业:
+1）获取上一个哥哥元素
+2）判断是否为公有属性
+3) 商品排序
+4) 求出现次数最多的单词，及出现的次数：两种思路1）对象不重名的特性 2）重复子项；
+5）有效数字的规则；  18-65岁的正则；  去除首尾空格的正则；
+6）日期格式化
+7）getCss
+8)win
+9)offset
+10)图片跑马灯
+11)单张图片延迟加载
+
+预习DOM方法封装的视频
